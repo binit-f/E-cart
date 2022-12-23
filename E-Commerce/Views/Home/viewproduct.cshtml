@@ -1,0 +1,211 @@
+﻿@inject Microsoft.AspNetCore.Identity.SignInManager<ApplicationUser> _signInManager
+@model E_Commerce.Models.Product
+
+@{
+    ViewData["Title"] = "viewproduct";
+    Layout = "~/Views/Shared/_custdash.cshtml";
+}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
+<style>
+       @* body {
+            font-family: 'Roboto Condensed', sans-serif;
+            background-color: #f5f5f5
+        }*@
+
+        .hedding {
+            font-size: 20px;
+            color: #ab8181;
+        }
+
+        .main-section {
+            position: relative;
+            left: 50%;
+            right: 50%;
+            transform: translate(-50%, 0%);
+        }
+
+        .left-side-product-box img {
+            width: 100%;
+        }
+
+        .left-side-product-box .sub-img img {
+            margin-top: 5px;
+            width: 83px;
+            height: 100px;
+        }
+
+        .right-side-pro-detail span {
+            font-size: 15px;
+        }
+
+        .right-side-pro-detail p {
+            font-size: 25px;
+            color: #a1a1a1;
+        }
+
+        .right-side-pro-detail .price-pro {
+            color: #E45641;
+        }
+
+        .right-side-pro-detail .tag-section {
+            font-size: 18px;
+            color: #5D4C46;
+        }
+
+        .pro-box-section .pro-box img {
+            width: 100%;
+            height: 100%;
+        }
+   
+
+</style>
+
+<div class="container-fluid py-auto">
+    <div class="col-lg-10  p-3 main-section bg-white">
+       @* <div class="row hedding m-0 pl-3 pt-0 pb-3">
+            Product Detail
+        </div>*@
+        <div class="row m-0">
+            <div class="col-lg-4 left-side-product-box pb-3">
+
+                <img src="~/Products/@Model.ImageFile" class" p-3 img-fluid" height="350" width="100" style="min-height:250px; max-height:350px;">
+
+            </div>
+            <div class="col-lg-8">
+                <div class="right-side-pro-detail  p-3 m-0">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <span>@ViewBag.catid</span>
+                            <p class="m-0 p-0">@Model.Product_name</p>
+                        </div>
+                        <div class="col-lg-12">
+                            <p class="m-0 p-0 price-pro">RS.@Model.product_price</p>
+                            <hr class="p-0 m-0">
+                        </div>
+                        <div class="col-lg-12 pt-2">
+                            <h5>Product Feauters</h5>
+                            <span>
+                                @*@Model.product_desc*@
+                                @Html.Raw(Model.product_desc)
+                            </span>
+                            <hr class="m-0 pt-2 mt-2">
+                        </div>
+                        @* <form asp-action="addtocart" asp-controller="Home" asp-route-id="@Model.product_id">   *@
+                        @*<div class="col-lg-5">
+            <h6>Quantity :</h6>
+            <input type="number" name="qtys" class="form-control text-center w-100 qty" value="1" max="10" min="1">
+        </div>*@
+                        @if (Model.product_qty > 0)
+                        {
+                            <div class="col-lg-12 mt-3">
+                                <div class="row">
+                                    <div class="col-lg-6 pb-2">
+                                        <button id="addtocartbtn" class="btn btn-danger w-100 addtocart" data-id="@Model.product_id">Add To Cart</button>
+                                        @*  <button id="gotocartbtn" class="btn btn-danger w-100" style="display:none;">Go To Cart</button>*@
+                                    </div>
+                                    @* </form>*@
+                                    <div class="col-lg-6">
+                                        <a asp-action="buynow" asp-route-id="@Model.product_id" class="btn btn-success w-100">Buy Now</a>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="col-lg-12 mt-3">
+                                <div class="row col-12">
+                                    <span class="font-weight-bold text-center text-danger" style="font-size:16px;">Currently Out Of Stock</span>
+                                </div>
+                            </div>
+                       }
+                            </div>
+                        </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-12 text-center pt-3">
+                <h4>Suggest Product</h4>
+            </div>
+        </div>
+
+        <div class="row mt-3 p-0 justify-content-between text-center pro-box-section">
+            @foreach (var items in @ViewBag.prd)
+            {
+
+
+
+
+                <div class="col-lg-4 py-4">
+                    <div class="pro-box border p-0 m-0">
+                        <img src="/Products/@items.ImageFile" style="max-height:350px;">
+                        <div>@items.Product_name</div>
+                    </div>
+
+                </div>
+
+
+
+
+
+
+            }
+        </div>
+
+        @*
+
+
+                @for (int i = ids; i <= det; i++)
+                {
+
+                    <div class="col-lg-3 pb-2">
+                        <div class="pro-box border p-0 m-0">
+                            <img src="/Products/@Model.ImageFile">
+                            <div>@Model.Product_name</div>
+                        </div>
+
+                    </div>
+
+                    }
+
+
+            </div>*@
+    </div>
+</div>
+<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+    
+
+
+<script>
+    
+    var products;
+
+    $(".addtocart").click(function () {
+       @* debugger;*@
+        var exsitingcookie = $.cookie('ProductId');
+        if (exsitingcookie != undefined && exsitingcookie !="" && exsitingcookie != null) {
+            products = exsitingcookie.split(',');
+        }
+        else {
+            products=[]
+        }
+        var productid = $(this).attr('data-id');
+        products.push(productid);
+        @*products.append(productid);*@
+        $.cookie('ProductId', products.join(','), { expires: 365, path: '/' });
+        updatecartproduct();
+        $.toast({
+            heading: 'Success',
+            showHideTransition: 'slide',
+            icon: 'success',
+            text: 'Add To Cart Successfully',
+            position: 'bottom-right',
+            stack: false
+        })
+       @* swal("Add To Cart Successfully", "You clicked the button!", "success");*@
+        @*$('.item_count').html(function (i, val) { return val * 1 + 1 });*@
+        console.log("ok");
+       
+    });
+
+</script>
